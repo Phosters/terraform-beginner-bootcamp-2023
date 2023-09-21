@@ -1,5 +1,6 @@
 # Terraform Beginner Bootcamp 2023
 
+![Terraform Bootcamp](./images/terraform.jpg)
 ## Semantic Versioning :mage:
 
 This project leverages semantic versioning for its tagging
