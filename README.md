@@ -28,3 +28,31 @@ The general format would be incremented this way **MAJOR.MINOR.PATCH**, eg: `1.0
 
 #### When to use gitpod init/before task
 [Gitpod task between init and before](https://www.gitpod.io/docs/configure/workspaces/tasks)
+
+#### How to work with Enivronment Variables
+[Link to all environment variables command](https://en.wikipedia.org/wiki/Environment_variable)
+
+List all environment variables with `env` command
+
+To filter a specific env var, use the `env | grep PROJECT_ROOT` command 
+To set env var use `export PROJECT_ROOT='/workspace/terraform-beginner-bootcamp-2023'` command
+To unset env var `unset PROJECT_ROOT` command
+to print env var `echo $PROJECT_ROOT` command
+
+In cases you want to set you env var within your bash script, you can do it this way
+
+```sh
+#!/var/bin/env bash
+PROJECT_ROOT='workspace/terraform-beginner-bootcamp-2023'
+echo $PROJECT_ROOT
+```
+Scoping env var; env var does not persist in new windows, to fix this you need to set it globally for all future bash terminals. eg `bash_profile`
+
+In gitpod we can persist with this to affect all future bash terminals that will be opened
+
+```
+gp env PROJECT_ROOT='workspace/terraform-beginner-bootcamp-2023'
+
+```
+
+Also one way we could approcah this is by using the `'gitpod.yml` file but the catch here is that your yml file shouldnt contain sensitve information
