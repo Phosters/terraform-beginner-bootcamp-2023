@@ -55,7 +55,7 @@ gp env PROJECT_ROOT='workspace/terraform-beginner-bootcamp-2023'
 
 ```
 
-Also one way we could approcah this is by using the `'gitpod.yml` file but the catch here is that your yml file shouldnt contain sensitve information
+Also, one way we could approach this is by using the `'gitpod.yml` file but the catch here is that your yaml file shouldn't contain sensitive information
 
 ## AWS CLI Installation
 AWS CLI is installed via the bash script with [aws cli linux installation link](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) 
@@ -74,7 +74,7 @@ To check whether aws credentials are set correctly, use this command
 aws sts get-caller-identity
 ```
 
-An output of something similar would be printed in json
+An output of something similar would be printed in JSON
 
 ```
 {
