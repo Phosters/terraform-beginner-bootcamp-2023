@@ -12,6 +12,14 @@ The general format would be incremented this way **MAJOR.MINOR.PATCH**, eg: `1.0
 - **MINOR** version when you add functionality in a backward compatible manner
 - **PATCH** version when you make backward compatible bug fixes
 
+### Git tags
+To create a tag and apply it to the main branch in a Git repository, first, you'll want to be on the main branch. You can switch to the main branch using the following command: `git checkout main`
+
+Once you are on the main branch, you can create a tag using the git tag command, like this:`git tag 0.1.0`
+This command creates a tag named "0.1.0" at the current commit on the main branch.
+
+To make this newly created tag take effect and push it to the remote repository, you can use the git push command with the --tags flag: `git push --tags`
+
 ## Links to resources used for this project \
 
 #### How to install terraform on ubuntu
@@ -93,3 +101,31 @@ export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 export AWS_DEFAULT_REGION=us-west-2
 
 ```
+
+## Installing and setting up Terraform
+
+### What terraform is
+**Terraform** is an open-source infrastructure as code (IAC) tool that enables the automated provisioning and management of cloud and on-premises infrastructure resources through declarative configuration files.
+
+### Main Terraform commands:
+  `terraform init`          Prepare your working directory for other commands
+  `terraform validate`      Check whether the configuration is valid
+  `terraform plan`          Show changes/changeset required by the current configuration
+  `terraform apply`         Create or update infrastructure. 
+  `terraform apply --auto-approve` Use this to automate apply to prevent typing yes  
+  `terraform destroy`       Destroy previously-created infrastructure
+
+### Accessing Terraform
+Terraform utilizes providers and modules in its deployment process. 
+**Providers** serve as plugins that connect to various cloud or infrastructure platforms, enabling Terraform to interact with them. eg: [random terraform provier](https://registry.terraform.io/providers/hashicorp/random/latest)
+**Modules** are reusable sets of Terraform configurations that simplify the management of infrastructure resources. 
+To explore and access providers and modules, visit [terraform](https://registry.terraform.io)
+
+### Terraform lock file
+Terraform lock files are used to prevent concurrent modifications to infrastructure configurations. They ensure that only one user or process can make changes to the infrastructure at a time, helping maintain consistency and prevent conflicts when multiple users are working on the same Terraform project simultaneously, **must be always be commited to verion control**. A sample lock file `terraform.lock.hcl`
+
+### Terraform state file
+A Terraform state file keeps track of the current status and configuration of infrastructure resources managed by Terraform, ensuring that changes are correctly applied and synchronized with your defined configuration,  **must not be always be commited to verion control**. A sample lock file `terraform.tfstate`
+
+### Terraform backup file
+A Terraform backup file, often referred to as a `terraform.tfstate.backup` file, is a copy of the previous state file generated when Terraform applies changes to infrastructure. It serves as a safety net, allowing you to revert to the previous state in case there are issues with the most recent changes made to your infrastructure using Terraform.
