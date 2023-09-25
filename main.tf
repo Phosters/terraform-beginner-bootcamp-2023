@@ -27,7 +27,7 @@ resource "random_string" "bucket_name" {
 
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket
 resource "aws_s3_bucket" "example" {
-  bucket = "random_string.bucket_name.result"
+  bucket = random_string.bucket_name.result
 }
 
 
