@@ -112,8 +112,8 @@ export AWS_DEFAULT_REGION=us-west-2
   `terraform validate`      Check whether the configuration is valid
   `terraform plan`          Show changes/changeset required by the current configuration
   `terraform apply`         Create or update infrastructure. 
-  `terraform apply --auto-approve` Use this to automate apply to prevent typing yes  
-  `terraform destroy`       Destroy previously-created infrastructure
+  `terraform apply --auto-approve` Use this flag to automate apply to prevent typing yes  
+  `terraform destroy`       Destroy previously-created infrastructure. Use the `--auto-approve` to automate apply to prevent typing yes 
 
 ### Accessing Terraform
 Terraform utilizes providers and modules in its deployment process. 
@@ -122,10 +122,10 @@ Terraform utilizes providers and modules in its deployment process.
 To explore and access providers and modules, visit [terraform](https://registry.terraform.io)
 
 ### Terraform lock file
-Terraform lock files are used to prevent concurrent modifications to infrastructure configurations. They ensure that only one user or process can make changes to the infrastructure at a time, helping maintain consistency and prevent conflicts when multiple users are working on the same Terraform project simultaneously, **must be always be commited to verion control**. A sample lock file `terraform.lock.hcl`
+Terraform lock files are used to prevent concurrent modifications to infrastructure configurations. They ensure that only one user or process can make changes to the infrastructure at a time, helping maintain consistency and prevent conflicts when multiple users are working on the same Terraform project simultaneously, **must always be committed to verion control**. A sample lock file `terraform.lock.hcl`
 
 ### Terraform state file
-A Terraform state file keeps track of the current status and configuration of infrastructure resources managed by Terraform, ensuring that changes are correctly applied and synchronized with your defined configuration,  **must not be always be commited to verion control**. A sample lock file `terraform.tfstate`
+A Terraform state file keeps track of the current status and configuration of infrastructure resources managed by Terraform, ensuring that changes are correctly applied and synchronized with your defined configuration,  **must not always be committed to version control**. A sample lock file `terraform.tfstate`
 
 ### Terraform backup file
-A Terraform backup file, often referred to as a `terraform.tfstate.backup` file, is a copy of the previous state file generated when Terraform applies changes to infrastructure. It serves as a safety net, allowing you to revert to the previous state in case there are issues with the most recent changes made to your infrastructure using Terraform.
+A Terraform backup file, often called a `terraform.tfstate.backup` file, is a copy of the previous state file generated when Terraform applies changes to infrastructure. It serves as a safety net, allowing you to revert to the last state in case there are issues with the most recent changes made to your infrastructure using Terraform.
