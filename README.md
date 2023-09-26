@@ -179,10 +179,11 @@ Provide the following code (replace your token in the file)
 {
   "credentials": {
     "app.terraform.io": {
-      "token": "F2aaIh5eOhAYcc.atlasv1.7775NOPEzo82qN88elI0qgbcyu3Jr0N4rluUqzIHEgsNf5uRxPfJ7DiV3QzwEXoNOPE"
+      "token": "*************replace_token***************"
     }
   }
 }
 
 ```
 >>>>>>> 860d2b1bb47ddfffa78937a807129a3e5bb4beda
+
