@@ -20,6 +20,28 @@ This command creates a tag named "0.1.0" at the current commit on the main branc
 
 To make this newly created tag take effect and push it to the remote repository, you can use the git push command with the --tags flag: `git push --tags`
 
+### Git Issues
+In situation where you forget to create an issue for a branch but later realise you are working in main;
+First stash on the main with the below
+
+```
+git fetch
+
+git add .
+
+git stash save 
+
+```
+
+After this, create your issue with a branch and then switch to branch and then use this command to bring back the stashed version to be committed, 
+
+```
+git stash apply
+
+```
+
+
+
 ## Links to resources used for this project \
 
 #### How to install terraform on ubuntu
@@ -129,3 +151,4 @@ A Terraform state file keeps track of the current status and configuration of in
 
 ### Terraform backup file
 A Terraform backup file, often referred to as a `terraform.tfstate.backup` file, is a copy of the previous state file generated when Terraform applies changes to infrastructure. It serves as a safety net, allowing you to revert to the previous state in case there are issues with the most recent changes made to your infrastructure using Terraform.
+
