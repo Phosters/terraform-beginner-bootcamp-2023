@@ -129,3 +129,35 @@ A Terraform state file keeps track of the current status and configuration of in
 
 ### Terraform backup file
 A Terraform backup file, often referred to as a `terraform.tfstate.backup` file, is a copy of the previous state file generated when Terraform applies changes to infrastructure. It serves as a safety net, allowing you to revert to the previous state in case there are issues with the most recent changes made to your infrastructure using Terraform.
+
+### Issues with terraform cloud login and Gitpod workspace
+When you run `terraform init` in gitpod to generate a token to connect terraform cloud to your env/gitpod, there are always challenges.
+
+To sort this, you need to manually generate a token in terraform cloud 
+
+```
+https://app.terraform.io/app/phosters/settings/authentication-tokens
+
+```
+Then create the file manually here:
+
+```sh
+touch /home/gitpod/.terraform.d/credentials.tfrc.json
+```
+
+```sh
+open /home/gitpod/.terraform.d/credentials.tfrc.json
+```
+
+Provide the following code (replace your token in the file)
+
+```json
+{
+  "credentials": {
+    "app.terraform.io": {
+      "token": "F2aaIh5eOhAYcc.atlasv1.7775NOPEzo82qN88elI0qgbcyu3Jr0N4rluUqzIHEgsNf5uRxPfJ7DiV3QzwEXoNOPE"
+    }
+  }
+}
+
+```

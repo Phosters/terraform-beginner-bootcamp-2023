@@ -1,5 +1,14 @@
 #https://registry.terraform.io/providers/hashicorp/aws/latest
 terraform {
+  
+  cloud {
+    organization = "phosters"
+
+    workspaces {
+      name = "terra-house-1"
+    }
+  }
+
   required_providers {
     random = {
       source = "hashicorp/random"
