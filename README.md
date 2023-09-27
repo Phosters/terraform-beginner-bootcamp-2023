@@ -187,6 +187,44 @@ Provide the following code (replace your token in the file)
   }
 }
 
+
+
 ```
 
+## Set up alias for terraform with tf
+ First open bash profile and set your alias in the profile, what this does is whenever you are typing terrafrom, you simply type tf.
+
+ To open bash profile ie; where all env vars are saved simply type `open ~/.bash_profile` in your workspace, then set your alias
+
+ ```
+ alias tf = "terraform"
+ 
+ ```
+
+ Test it by reloading the bash profile with ` source ~/.bash_profile` and then test it with `tf`
+
+### Automating bash profile with alias tf for terraform
+After this, we will should be automated for future so a script needs to be generated to perform this task whenerver we start our env with this
+
+```sh
+#!/bin/bash
+
+# Define the alias command
+ALIAS_COMMAND='alias tf="terraform"'
+
+# Check if the alias already exists in ~/.bash_profile
+if grep -q "$ALIAS_COMMAND" "$HOME/.bash_profile"; then
+  echo "Alias 'tf' already exists in ~/.bash_profile."
+else
+  # Append the alias command to ~/.bash_profile
+  echo "$ALIAS_COMMAND" >> "$HOME/.bash_profile"
+  echo "Alias 'tf' added to ~/.bash_profile."
+  # Load the updated ~/.bash_profile to make the alias available in the current session
+  source "$HOME/.bash_profile"
+fi
+
+```
+Make this file executeable with the `chmod u+x` command and then set it by using   `./bin/set_tf_alias`
+
+To finish up we set this in `gitpod.yml` for both aws and terraform with ``
 
