@@ -157,6 +157,10 @@ A Terraform backup file, often referred to as a `terraform.tfstate.backup` file,
 When you run `terraform init` in gitpod to generate a token to connect terraform cloud to your env/gitpod, there are always challenges.
 
 To sort this, you need to manually generate a token in terraform cloud 
+NB: The token must be a `user token and` not `organisation token`
+
+After this add an env var for terraform to communicate with AWS, this is done by
+going to your terraform cloud > variables > env variables and then set `AWS access key, secret key and then region` NB: AWS is used as an example, if you are using different providers like google then you use that access and secret keys.
 
 ```
 https://app.terraform.io/app/phosters/settings/authentication-tokens
