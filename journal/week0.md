@@ -4,7 +4,7 @@
     + [Git tags](#git-tags)
     + [Git Issues](#git-issues)
       
- * [Links to resources used for this project \](#links-to-resources-used-for-this-project--)
+ * [Links to resources used for this project](#links-to-resources-used-for-this-project--)
       - [How to install terraform on ubuntu](#how-to-install-terraform-on-ubuntu)
       - [Creating a script with shebang identifying the different types and the best one to use](#creating-a-script-with-shebang-identifying-the-different-types-and-the-best-one-to-use)
       - [How to identify the linux distribution been used by your workload](#how-to-identify-the-linux-distribution-been-used-by-your-workload)
