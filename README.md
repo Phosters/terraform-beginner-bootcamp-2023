@@ -228,3 +228,72 @@ Make this file executeable with the `chmod u+x` command and then set it by using
 
 To finish up we set this in `gitpod.yml` for both aws and terraform with ``
 
+## AWS CLI and AWS S3 Static Website Deployment
+
+This guide explains how to deploy a static website to Amazon S3 using the AWS Command Line Interface (CLI) and set up a CloudFront distribution to serve the website.
+
+### Prerequisites
+
+Before you begin, make sure you have the following prerequisites:
+
+- An AWS account
+- AWS CLI installed and configured with appropriate IAM credentials
+
+### Step 1: Create an S3 Bucket and Set It as a Static Website
+
+1. Create an S3 bucket on the AWS website.
+   
+2. Set up the bucket as a static website:
+   - Navigate to the bucket properties.
+   - Choose "Static website hosting."
+   - Enter the index and error document names (usually "index.html").
+   - Save your configuration.
+
+### Step 2: Install and Start a Web Server
+
+Install the `http-server` globally to serve your static website locally.
+
+```shell
+npm install http-server -g
+```
+
+Start the web server:
+```shell
+http-server 
+```
+This will open your website on a local port for testing.
+
+Step 3: Upload Your Website to S3
+Use the AWS CLI to copy your website files to the S3 bucket. Replace *filelocation/name* with the path to your website files and s3://bucket/name with your S3 bucket and object key (e.g., s3://my-bucket/index.html).
+
+```shell
+aws s3 cp *filelocation/name* s3://bucket/name
+```
+
+Ensure you've created the S3 bucket and turned on static website hosting.
+
+Note: Leave public access private and do not configure a bucket policy. We will use a CDN (CloudFront) to serve the website securely.
+
+Step 4: Create a CloudFront Distribution
+Go to the AWS Management Console and create a CloudFront distribution.
+
+### Set up origin access control:
+
+In the CloudFront distribution settings, navigate to "Security" settings.
+Choose "Control Settings" (not "Identities").
+Choose your S3 bucket as the origin (e.g., my-bucket/index.html).
+Create your CloudFront distribution.
+
+Step 5: Describe Your CloudFront Distribution
+Provide a descriptive name for your CloudFront distribution to distinguish it from others.
+
+Step 6: Confirm Distribution Status
+Check and confirm that the CloudFront distribution status is "Enabled."
+
+Step 7: Obtain CloudFront URL
+The CloudFront distribution will provide you with a new URL. Use this URL to access your website securely.
+
+Step 8: Connect CloudFront URL to Your Domain
+To associate your CloudFront URL with your domain, create a CNAME record in your domain's DNS settings that points to the CloudFront URL.
+
+Your static website is now deployed and served through CloudFront.
