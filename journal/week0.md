@@ -27,5 +27,5 @@
     + [Step 2: Install and Start a Web Server](#step-2--install-and-start-a-web-server)
     + [Set up origin access control:](#set-up-origin-access-control-)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 
