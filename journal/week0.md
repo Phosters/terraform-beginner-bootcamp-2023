@@ -1,4 +1,6 @@
-- [Terraform Beginner Bootcamp 2023](#terraform-beginner-bootcamp-2023)
+Terraform Beginner Bootcamp 2023
+
+![Week One Arhcitecture](.images/arch_week0.png)
 
 * [Semantic Versioning :mage:](#semantic-versioning--mage-)
     + [Git tags](#git-tags)
