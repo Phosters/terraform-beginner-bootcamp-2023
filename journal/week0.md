@@ -1,6 +1,6 @@
 Terraform Beginner Bootcamp 2023
 
-![Terraform Bootcamp](./images/arch_week0.png)
+![Terraform Bootcamp Week 0 Architecture](./images/arch_week0.png)
 
 * [Semantic Versioning :mage:](#semantic-versioning--mage-)
     + [Git tags](#git-tags)
