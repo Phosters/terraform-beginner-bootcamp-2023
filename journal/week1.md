@@ -131,7 +131,7 @@ module "terrahouse_aws" {
 
 ### Fix Terraform using Refresh only
 [Terraform refresh only command](https://developer.hashicorp.com/terraform/cli/commands/refresh)
-used to check updates on terraform locally to see changes
+Used to check updates on terraform locally to see changes
 
 ```tf
 terraform apply -refresh-only -auto-approve
