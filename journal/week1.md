@@ -66,4 +66,40 @@ Terraform variables are used to define values that can be used in Terraform conf
 -Command-line arguments (including the var flag)
 -Variable defaults
 
-This means that variable values in environment variables will override variable values in Terraform tfvars files, and so on.
+This means that variable values in environment variables will override variable values in Terraform tfvars files, and so on
+
+## Terraform import
+
+### What terraform  import really is
+Terraform import is a command used to bring existing infrastructure resources under Terraform's management. It is a way to tell Terraform about resources that were created outside of Terraform so that Terraform can track and manage their state.
+
+### Resource Identification
+First, identify the resource (in our case S3 bucket) you want to import. You'll need the name of the bucket. For example, if your bucket is named "my-existing-bucket," you can import it using: 
+
+```sh
+terraform import aws_s3_bucket.my_bucket my-existing-bucket
+
+```
+### Resource Configuration
+Next, create a corresponding resource block in your Terraform configuration file (e.g., main.tf) to match the imported resource. For an S3 bucket, it might look like this:
+[Aws S3 bucket import](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket#import)
+
+```sh
+resource "aws_s3_bucket" "my_bucket" {
+  bucket = "my-existing-bucket"
+  acl    = "private"
+  # Additional configuration settings as needed
+}
+```
+### Running terraform import
+[Terraform import](https://developer.hashicorp.com/terraform/cli/import)
+Execute the terraform import command as shown in step 1. `terraform import aws_s3_bucket.my_bucket my-existing-bucket` Terraform will reach out to AWS, identify the existing S3 bucket's details, and import it into Terraform's state. This is helpful when someone deletes a resources through clickOps without our knowledge, terraform will notice the state and add the resouces in our next attempt to run `terraform apply`
+
+### Terraform State
+Terraform will create or update its state file (usually named `terraform.tfstate`) to represent the current state of the imported S3 bucket. This state file is crucial for tracking and managing the resource in the future.
+
+If you loose your state file, you would have to tear down all resources manually and `terraform apply` again
+You can use an import for this use case, but they will not work 100% in most cases.
+
+### Plan and Apply
+After importing, you can use Terraform's standard workflow. Run `terraform plan` to see proposed changes and `terraform apply` to make any desired updates to the S3 bucket's configuration
