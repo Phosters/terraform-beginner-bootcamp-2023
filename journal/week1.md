@@ -103,3 +103,37 @@ You can use an import for this use case, but they will not work 100% in most cas
 
 ### Plan and Apply
 After importing, you can use Terraform's standard workflow. Run `terraform plan` to see proposed changes and `terraform apply` to make any desired updates to the S3 bucket's configuration
+
+## Terraform Module 
+
+### Terraform Module Structure
+It is recommended to place modules in a `modules` directory when locally developing modules but you can name it whatever you want
+
+### Module Sources
+[Modules sources for terraform](https://developer.hashicorp.com/terraform/language/modules/sources#local-paths)
+
+Using terraform modules, we can pass it from multiple sources ie;
+- Locally
+- Github
+- Terraform Registry
+
+### Passing Input Variables
+We can pass input variables to our module.
+The module has to declare the terraform variables in its own variables.tf
+
+```tf
+module "terrahouse_aws" {
+    source = "./modules/terrahouse_aws"
+    user_uuid = "var.user_uuid"
+    bucket_name = "var.bucket_name"
+}
+```
+
+### Fix Terraform using Refresh only
+[Terraform refresh only command](https://developer.hashicorp.com/terraform/cli/commands/refresh)
+used to check updates on terraform locally to see changes
+
+```tf
+terraform apply -refresh-only -auto-approve
+
+```
