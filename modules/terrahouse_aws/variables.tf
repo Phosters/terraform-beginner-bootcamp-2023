@@ -19,7 +19,7 @@ variable "index_html_filepath" {
   description = "Path to the index.html file"
 
   validation {
-    condition = (fileexists(var.index_html_filepath))
+    condition = fileexists(var.index_html_filepath)
     error_message = "The specified index_html_filepath is not a valid file path."
   }
 }
@@ -29,7 +29,7 @@ variable "error_html_filepath" {
   description = "Path to the error.html file"
   
   validation {
-    condition = (fileexists(var.error_html_filepath))
+    condition = fileexists(var.error_html_filepath)
     error_message = "The specified error_html_filepath is not a valid file path."
   }
 }
