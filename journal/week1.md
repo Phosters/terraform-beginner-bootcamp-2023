@@ -137,3 +137,52 @@ Used to check updates on terraform locally to see changes
 terraform apply -refresh-only -auto-approve
 
 ```
+
+## S3 Staic Website Hosting
+
+### Configure S3 bucket for web hosting
+Most reources for configuring s3 web hosting online are depricated so rely on the one from terraform providers
+[S3 Bucket Website Configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_website_configuration)
+
+### Update outputs for static website hosting url
+To leverage on the static website endpoint for other activities, you can use outputs to get it
+[Outputs for static website hosting](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_website_configuration#attribute-reference)
+
+## Working with files in in Terraform
+
+### Path Variable
+[Path variable for root & module](https://developer.hashicorp.com/terraform/language/expressions/references#path-module)
+In terraform, there is a special variable called `path` that allows us reference local paths:
+- path.module = get the path for the current module
+- path.root = get the path for the root
+
+```
+resource "aws_s3_object" "index_html" {
+  bucket = aws_s3_bucket.website_bucket.bucket
+  key    = "index.html"
+  source = "${path.root}/public/index.html
+}
+
+```
+
+### Etag
+[Etag reference](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag)
+The ETag (or entity tag) HTTP response header is an identifier for a specific version of a resource. It lets caches be more efficient and save bandwidth, as a web server does not need to resend a full response if the content was not changed. Additionally, etags help to prevent simultaneous updates of a resource from overwriting each other
+
+### Filemd5 hash
+[Filemd5 Function](https://developer.hashicorp.com/terraform/language/functions/filemd5)
+filemd5 is a variant of md5 that hashes the contents of a given file rather than a literal string.
+This is similar to md5(file(filename)), but because file accepts only UTF-8 text it cannot be used to create hashes for binary files.
+
+```tf
+etag = filemd5("path/to/file")
+
+```
+
+### File exists function
+[Fileexists Function](https://developer.hashicorp.com/terraform/language/functions/fileexists)
+A terraform built in function that checks whether a `file exists` or not
+
+```tf
+condition = (fileexists(var.index_html_filepath))
+```
