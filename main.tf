@@ -1,4 +1,6 @@
 #https://registry.terraform.io/providers/hashicorp/aws/latest
+/*
+
 terraform {
   
   cloud {
@@ -12,6 +14,7 @@ terraform {
 
 }
 
+*/
 
 module "terrahouse_aws" {
     source = "./modules/terrahouse_aws"
