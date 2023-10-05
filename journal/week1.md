@@ -364,3 +364,39 @@ locals {
 
 ```
 
+### Invalidate cache - CDN (Cloudfront)
+
+### Chnging the lifecycle of resources
+[Meta lifecycle Argument](https://developer.hashicorp.com/terraform/language/meta-arguments/lifecycle)
+Used when there is a change in your environment
+
+```tf
+  lifecycle {
+    create_before_destroy = true
+  }
+
+```
+
+### Terraform data 
+[Terraform data](https://developer.hashicorp.com/terraform/language/resources/terraform-data)
+
+Plain data values such as Local Values and Input Variables don't have any side-effects to plan against and so they aren't valid in replace_triggered_by. You can use terraform_data's behavior of planning an action each time input changes to indirectly use a plain value to trigger replacement.
+
+```
+variable "revision" {
+  default = 1
+}
+
+resource "terraform_data" "replacement" {
+  input = var.revision
+}
+
+# This resource has no convenient attribute which forces replacement,
+# but can now be replaced by any change to the revision variable value.
+resource "example_database" "test" {
+  lifecycle {
+    replace_triggered_by = [terraform_data.replacement]
+  }
+}
+
+```
