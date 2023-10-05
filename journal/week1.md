@@ -186,3 +186,181 @@ A terraform built in function that checks whether a `file exists` or not
 ```tf
 condition = (fileexists(var.index_html_filepath))
 ```
+
+## Setting up CDN for website hosting
+The things required for setting up cloudfront:
+- Cloudfront distribution
+- Cloudfront Origin access control
+- Bucket policy
+
+
+### Cloudfront-Origin Access Control
+[Origin Access Control](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudfront_origin_access_control)
+Origin Access identity is deprecated so is recommended to utilise Origin Access Control
+Manages an AWS CloudFront Origin Access Control, which is used by CloudFront Distributions with an Amazon S3 bucket as the origin.
+
+```tf
+resource "aws_cloudfront_origin_access_control" "example" {
+  name                              = "example"
+  description                       = "Example Policy"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
+
+```
+
+### Cloudfront distribution
+[cloudfront distribution](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudfront_distribution)
+Amazon CloudFront is a web service that speeds up distribution of your static and dynamic web content, such as .html, .css, .js, and image files, to your users.
+
+```tf
+
+locals {
+  s3_origin_id = "myS3Origin"
+}
+
+resource "aws_cloudfront_distribution" "s3_distribution" {
+  origin {
+    domain_name              = aws_s3_bucket.b.bucket_regional_domain_name
+    origin_access_control_id = aws_cloudfront_origin_access_control.default.id
+    origin_id                = local.s3_origin_id
+  }
+
+  enabled             = true
+  is_ipv6_enabled     = true
+  comment             = "Some comment"
+  default_root_object = "index.html"
+
+  logging_config {
+    include_cookies = false
+    bucket          = "mylogs.s3.amazonaws.com"
+    prefix          = "myprefix"
+  }
+
+  aliases = ["mysite.example.com", "yoursite.example.com"]
+
+  default_cache_behavior {
+    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = local.s3_origin_id
+
+    forwarded_values {
+      query_string = false
+
+      cookies {
+        forward = "none"
+      }
+    }
+
+    viewer_protocol_policy = "allow-all"
+    min_ttl                = 0
+    default_ttl            = 3600
+    max_ttl                = 86400
+  }
+
+  price_class = "PriceClass_200"
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "whitelist"
+      locations        = ["US", "CA", "GB", "DE"]
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+}
+
+```
+
+### Bucket Policy
+[S3 Bucket Policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy)
+Attaches a policy to an S3 bucket resource.
+
+```tf
+
+resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
+  bucket = aws_s3_bucket.example.id
+  policy = data.aws_iam_policy_document.allow_access_from_another_account.json  
+}
+
+```
+Policy acn be set by giving our own policy defined here by aws
+[bucket Policy](https://aws.amazon.com/blogs/networking-and-content-delivery/amazon-cloudfront-introduces-origin-access-control-oac/)
+
+### Jsonencode function - working with Json
+jsonencode encodes a given value to a string using JSON syntax.
+[Jsonencode function](https://developer.hashicorp.com/terraform/language/functions/jsonencode)
+```tf
+> jsonencode({"hello"="world"})
+{"hello":"world"}
+
+```
+
+policy = jsonencode ({
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowCloudFrontServicePrincipalReadOnly",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "cloudfront.amazonaws.com"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::DOC-EXAMPLE-BUCKET/*",
+            "Condition": {
+                "StringEquals": {
+                    "AWS:SourceArn": "arn:aws:cloudfront::ACCOUNT_ID:distribution/DISTRIBUTION_ID"
+                }
+            }
+        },
+        {
+            "Sid": "AllowLegacyOAIReadOnly",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity EH1HDMB1FH2TC"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::DOC-EXAMPLE-BUCKET/*"
+        }
+    ]
+}
+})
+
+### Terraform Data sources
+[Terraform Data Sources](https://developer.hashicorp.com/terraform/language/data-sources)
+Data sources allow Terraform to use information defined outside of Terraform, defined by another separate Terraform configuration, or modified by functions. used to reference cloud resources without importing them
+Example is the [aws_caller_idnetity ](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity)
+
+```tf
+data "aws_caller_identity" "current" {}
+
+output "account_id" {
+  value = data.aws_caller_identity.current.account_id
+}
+
+output "caller_arn" {
+  value = data.aws_caller_identity.current.arn
+}
+
+output "caller_user" {
+  value = data.aws_caller_identity.current.user_id
+}
+
+```
+
+### Terraform locals
+A local value assigns a name to an expression, so you can use the name multiple times within a module instead of repeating the expression. Is useful when we want to transform data into another format and have it referenced a variable
+[Terraform local variables](https://developer.hashicorp.com/terraform/language/values/locals)
+
+```tf
+locals {
+  service_name = "forum"
+  owner        = "Community Team"
+}
+
+```
+
