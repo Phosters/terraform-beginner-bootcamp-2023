@@ -279,7 +279,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 [S3 Bucket Policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy)
 Attaches a policy to an S3 bucket resource.
 
-```tf
+```t
 
 resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
   bucket = aws_s3_bucket.example.id
@@ -293,7 +293,8 @@ Policy acn be set by giving our own policy defined here by aws
 ### Jsonencode function - working with Json
 jsonencode encodes a given value to a string using JSON syntax.
 [Jsonencode function](https://developer.hashicorp.com/terraform/language/functions/jsonencode)
-```tf
+
+```t
 > jsonencode({"hello"="world"})
 {"hello":"world"}
 
@@ -335,7 +336,7 @@ policy = jsonencode ({
 Data sources allow Terraform to use information defined outside of Terraform, defined by another separate Terraform configuration, or modified by functions. used to reference cloud resources without importing them
 Example is the [aws_caller_idnetity ](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity)
 
-```tf
+```t
 data "aws_caller_identity" "current" {}
 
 output "account_id" {
@@ -356,7 +357,7 @@ output "caller_user" {
 A local value assigns a name to an expression, so you can use the name multiple times within a module instead of repeating the expression. Is useful when we want to transform data into another format and have it referenced a variable
 [Terraform local variables](https://developer.hashicorp.com/terraform/language/values/locals)
 
-```tf
+```t
 locals {
   service_name = "forum"
   owner        = "Community Team"
@@ -370,7 +371,7 @@ locals {
 [Meta lifecycle Argument](https://developer.hashicorp.com/terraform/language/meta-arguments/lifecycle)
 Used when there is a change in your environment
 
-```tf
+```t
   lifecycle {
     create_before_destroy = true
   }
@@ -382,7 +383,7 @@ Used when there is a change in your environment
 
 Plain data values such as Local Values and Input Variables don't have any side-effects to plan against and so they aren't valid in replace_triggered_by. You can use terraform_data's behavior of planning an action each time input changes to indirectly use a plain value to trigger replacement.
 
-```
+```t
 variable "revision" {
   default = 1
 }
@@ -398,5 +399,107 @@ resource "example_database" "test" {
     replace_triggered_by = [terraform_data.replacement]
   }
 }
+
+```
+
+## Invalidate Cloudfront Distribution
+[Provisioners](https://developer.hashicorp.com/terraform/language/resources/provisioners/syntax)
+Provisioners are used to execute scripts on a **local** or **remote machine** as part of resource creation or destruction. Provisioners can be used to bootstrap a resource, cleanup before destroy, run configuration management. NB: Is not recommended to use provisiorners but use configuration management tools like ansible
+
+ ### Local Exec
+ [Local Exec Provisioner](https://developer.hashicorp.com/terraform/language/resources/provisioners/local-exec)
+ This will execute command on the machine running the terraform commands eg plan, apply
+If you are certain that provisioners are the best way to solve your problem after considering the advice in the sections above, you can add a provisioner block inside the resource block of a compute instance.
+
+```t
+resource "aws_instance" "web" {
+  # ...
+
+  provisioner "local-exec" {
+    command = "echo The server's IP address is ${self.private_ip}"
+  }
+}
+
+```
+### Remote Exec
+[Remote Exec Provisioner](https://developer.hashicorp.com/terraform/language/resources/provisioners/remote-exec)
+This will execute commands which you target. You will need to provide credentials such as ssh to get into the machine
+The remote-exec provisioner invokes a script on a remote resource after it is created. This can be used to run a configuration management tool, bootstrap into a cluster, etc. To invoke a local process, see the local-exec provisioner instead. The remote-exec provisioner requires a connection and supports both ssh and winrm.
+
+```t
+resource "aws_instance" "web" {
+  # ...
+
+  # Establishes connection to be used by all
+  # generic remote provisioners (i.e. file/remote-exec)
+  connection {
+    type     = "ssh"
+    user     = "root"
+    password = var.root_password
+    host     = self.public_ip
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "puppet apply",
+      "consul join ${aws_instance.web.private_ip}",
+    ]
+  }
+}
+
+```
+### File Provisioners
+[File Provisoners](https://developer.hashicorp.com/terraform/language/resources/provisioners/file)
+The file provisioner copies files or directories from the machine running Terraform to the newly created resource. The file provisioner supports both ssh and winrm type connections.
+
+```t
+resource "aws_instance" "web" {
+  # ...
+
+  # Copies the myapp.conf file to /etc/myapp.conf
+  provisioner "file" {
+    source      = "conf/myapp.conf"
+    destination = "/etc/myapp.conf"
+  }
+
+  # Copies the string in content into /tmp/file.log
+  provisioner "file" {
+    content     = "ami used: ${self.ami}"
+    destination = "/tmp/file.log"
+  }
+
+  # Copies the configs.d folder to /etc/configs.d
+  provisioner "file" {
+    source      = "conf/configs.d"
+    destination = "/etc"
+  }
+
+  # Copies all files and folders in apps/app1 to D:/IIS/webapp1
+  provisioner "file" {
+    source      = "apps/app1/"
+    destination = "D:/IIS/webapp1"
+  }
+}
+
+```
+
+### Implementing a Heredoc
+[Heredoc Concept](https://www.google.com/search?q=heredoc&rlz=1C1CHBD_enGH1067GH1067&oq=heredoc&gs_lcrp=EgZjaHJvbWUyCQgAEEUYORiABDIHCAEQABiABDIHCAIQABiABDIHCAMQABiABDIHCAQQABiABDIHCAUQABiABDIHCAYQABiABDIHCAcQABiABDIHCAgQABiABDIHCAkQABiABNIBCDE5NDlqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8)
+In computing, a here document is a file literal or input stream literal: it is a section of a source code file that is treated as if it were a separate file;
+
+```sh
+<<EOT
+%{ for ip in aws_instance.example[*].private_ip ~}
+server ${ip}
+%{ endfor ~}
+EOT
+
+```
+The concept behind heredoc is that instead of the entire code been on a single line, we break it down to several lines to get the beneath output, giving you a clean comparted output  NB: Remember to start with EOT and end with it.
+
+```sh
+server 10.1.16.154
+server 10.1.16.1
+server 10.1.16.34
 
 ```
