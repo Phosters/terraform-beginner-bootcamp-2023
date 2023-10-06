@@ -69,11 +69,11 @@ resource "terraform_data" "invalidate_cache" {
   # https://developer.hashicorp.com/terraform/language/expressions/strings
   provisioner "local-exec" {
   # command = "aws_cloudfront create-invalidation --distribution-id ${aws_cloudfront_distribution.example.id} --paths '/*'"
-  command = <<EOT
+  command = <<COMMAND
   aws_cloudfront create-invalidation \
-  --distribution-id ${aws_cloudfront_distribution.example.id} \
+  --distribution-id ${aws_cloudfront_distribution.s3_distribution.id} \
   --paths '/*'
-EOT
+COMMAND
   }
 }
   
