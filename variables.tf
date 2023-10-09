@@ -18,6 +18,6 @@ variable "content_version" {
   type = number
 }
 
-variable "assests_path"{
+variable "assets_path"{
   type = string
 }
