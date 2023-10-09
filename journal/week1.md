@@ -503,3 +503,26 @@ server 10.1.16.1
 server 10.1.16.34
 
 ```
+
+### Preview your website locally
+Install webserver ie; http server  
+[Http-Server](https://www.npmjs.com/package/http-server)
+
+Install command:```npm install --global http-server```
+
+Now serve it up with ``` http-server```
+
+### Working with Terraform Console
+Enter into terraform console ```terraform console```
+
+[Fileset Function](https://developer.hashicorp.com/terraform/language/functions/fileset)
+File reads the contents of a file at the given path and returns them as a string.
+fileset enumerates a set of regular file names given a path and pattern. The path is automatically removed from the resulting set of file names and any result still containing path separators always returns forward slash (/) as the path separator for cross-system compatibility. eg; `fileset(path, pattern)`
+
+Fileset function to set a path ```fileset("${path.root}/public/assets", "*.{jpg,png,gif}") ```
+
+### For_each Expressions
+[For_each Expressions](https://developer.hashicorp.com/terraform/language/meta-arguments/for_each)
+It allows us to enumerate over complex data types
+This is useful when creating multiple cloud resources and you want to reduce the amount of repetitive terraform code 
+By default, a resource block configures one real infrastructure object (and similarly, a module block includes a child module's contents into the configuration one time). However, sometimes you want to manage several similar objects (like a fixed pool of compute instances) without writing a separate block for each one. Terraform has two ways to do this: count and for_each.
