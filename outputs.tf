@@ -8,7 +8,7 @@ output "S3_website_endpoint" {
   value       = module.terrahouse_aws.website_endpoint
 }
 
-# output "cloudfront_url" {
-#   description = "The Cloudfront Distribution Domain name"
-#   value       = module.terrahouse_aws.cloudfront_url
-# }
+output "cloudfront_url" {
+  description = "The Cloudfront Distribution Domain name"
+  value       = module.terrahouse_aws.cloudfront_url
+}
