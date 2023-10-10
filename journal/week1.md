@@ -526,3 +526,58 @@ Fileset function to set a path ```fileset("${path.root}/public/assets", "*.{jpg,
 It allows us to enumerate over complex data types
 This is useful when creating multiple cloud resources and you want to reduce the amount of repetitive terraform code 
 By default, a resource block configures one real infrastructure object (and similarly, a module block includes a child module's contents into the configuration one time). However, sometimes you want to manage several similar objects (like a fixed pool of compute instances) without writing a separate block for each one. Terraform has two ways to do this: count and for_each.
+
+## Switching Git tags
+Just like braching, you can also branch a tag ```git checkout 1.5.0```
+After this, instead of main branch, you will see `(1.5.0)`
+You can create another branch with ```git checkout -b terraform-cloud``
+
+## Storing State in Terraform Cloud (A basic intro to GitOps)
+Make sure you have a terraform provider block for your terraform
+
+```t
+terraform {
+  
+  cloud {
+    organization = "phosters"
+
+    workspaces {
+      name = "terraform-cloud"
+    }
+  }
+
+
+}
+```
+Then connect terraform cloud to your vcs ie; Github, Bitbucket and Gitlab
+`Workspace settings > Version Control > Github ` 
+At times this will not work as plan when using Github, so you will need to go to github to check its permissions
+
+`Github > Settings > Integrations > Applications >Choose your branch name > select the right repository if not selected `
+
+
+Locating ecution mode; `Workspace settings > General > Execution Mode > Local/Remote`
+Then make it pick its variables from local by changing it from remote to local
+
+If you want to do a remote execute, then add the various **terraform var** and **env vars** to the remote terraform cloud
+NB: If you are in local as execution, vars will not be visible unless remote
+
+In our case we will work with remote and the **env var** for accessing aws will be:
+
+```t
+AWS_ACCESS_KEY_ID='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+AWS_SECRET_ACCESS_KEY='xxxxxxxxxxxxxxxxxxxxxxxxxxx/xxx'
+AWS_DEFAULT_REGION='us-east-2'
+
+```
+And then add the **terraform variables** in our .tfvars
+
+```t
+user_uuid = "25262-jhbnk-4bjknb1-bfnj8c-29bjjn"
+bucket_name = "terraform_bootcamp_bucket_2023"
+index_html_filepath = "/workspace/terraform-beginner-bootcamp-2023/public/index.html"
+error_html_filepath = "/workspace/terraform-beginner-bootcamp-2023/public/error.html"
+assets_path = "/workspace/terraform-beginner-bootcamp-2023/public/assets"
+content_version = 1
+```
+
