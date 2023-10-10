@@ -58,29 +58,7 @@
 #     UserUuid = var.user_uuid
 #   }
 
-
 #   viewer_certificate {
 #     cloudfront_default_certificate = true
 #   }
 # }
-
-  viewer_certificate {
-    cloudfront_default_certificate = true
-  }
-}
-
-
-resource "terraform_data" "invalidate_cache" {
-  triggers_replace = terraform_data.content_version.output
-
-  # https://developer.hashicorp.com/terraform/language/expressions/strings
-  provisioner "local-exec" {
-  # command = "aws_cloudfront create-invalidation --distribution-id ${aws_cloudfront_distribution.example.id} --paths '/*'"
-  command = <<COMMAND
-  aws cloudfront create-invalidation \
-  --distribution-id ${aws_cloudfront_distribution.s3_distribution.id} \
-  --paths '/*'
-COMMAND
-  }
-}
-  
