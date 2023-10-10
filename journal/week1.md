@@ -279,7 +279,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 [S3 Bucket Policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy)
 Attaches a policy to an S3 bucket resource.
 
-```tf
+```t
 
 resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
   bucket = aws_s3_bucket.example.id
@@ -293,7 +293,8 @@ Policy acn be set by giving our own policy defined here by aws
 ### Jsonencode function - working with Json
 jsonencode encodes a given value to a string using JSON syntax.
 [Jsonencode function](https://developer.hashicorp.com/terraform/language/functions/jsonencode)
-```tf
+
+```t
 > jsonencode({"hello"="world"})
 {"hello":"world"}
 
@@ -335,7 +336,7 @@ policy = jsonencode ({
 Data sources allow Terraform to use information defined outside of Terraform, defined by another separate Terraform configuration, or modified by functions. used to reference cloud resources without importing them
 Example is the [aws_caller_idnetity ](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity)
 
-```tf
+```t
 data "aws_caller_identity" "current" {}
 
 output "account_id" {
@@ -356,7 +357,7 @@ output "caller_user" {
 A local value assigns a name to an expression, so you can use the name multiple times within a module instead of repeating the expression. Is useful when we want to transform data into another format and have it referenced a variable
 [Terraform local variables](https://developer.hashicorp.com/terraform/language/values/locals)
 
-```tf
+```t
 locals {
   service_name = "forum"
   owner        = "Community Team"
@@ -364,3 +365,218 @@ locals {
 
 ```
 
+### Invalidate cache - CDN (Cloudfront)
+
+### Chnging the lifecycle of resources
+[Meta lifecycle Argument](https://developer.hashicorp.com/terraform/language/meta-arguments/lifecycle)
+Used when there is a change in your environment
+
+```t
+  lifecycle {
+    create_before_destroy = true
+  }
+
+```
+
+### Terraform data 
+[Terraform data](https://developer.hashicorp.com/terraform/language/resources/terraform-data)
+
+Plain data values such as Local Values and Input Variables don't have any side-effects to plan against and so they aren't valid in replace_triggered_by. You can use terraform_data's behavior of planning an action each time input changes to indirectly use a plain value to trigger replacement.
+
+```t
+variable "revision" {
+  default = 1
+}
+
+resource "terraform_data" "replacement" {
+  input = var.revision
+}
+
+# This resource has no convenient attribute which forces replacement,
+# but can now be replaced by any change to the revision variable value.
+resource "example_database" "test" {
+  lifecycle {
+    replace_triggered_by = [terraform_data.replacement]
+  }
+}
+
+```
+
+## Invalidate Cloudfront Distribution
+[Provisioners](https://developer.hashicorp.com/terraform/language/resources/provisioners/syntax)
+Provisioners are used to execute scripts on a **local** or **remote machine** as part of resource creation or destruction. Provisioners can be used to bootstrap a resource, cleanup before destroy, run configuration management. NB: Is not recommended to use provisiorners but use configuration management tools like ansible
+
+ ### Local Exec
+ [Local Exec Provisioner](https://developer.hashicorp.com/terraform/language/resources/provisioners/local-exec)
+ This will execute command on the machine running the terraform commands eg plan, apply
+If you are certain that provisioners are the best way to solve your problem after considering the advice in the sections above, you can add a provisioner block inside the resource block of a compute instance.
+
+```t
+resource "aws_instance" "web" {
+  # ...
+
+  provisioner "local-exec" {
+    command = "echo The server's IP address is ${self.private_ip}"
+  }
+}
+
+```
+### Remote Exec
+[Remote Exec Provisioner](https://developer.hashicorp.com/terraform/language/resources/provisioners/remote-exec)
+This will execute commands which you target. You will need to provide credentials such as ssh to get into the machine
+The remote-exec provisioner invokes a script on a remote resource after it is created. This can be used to run a configuration management tool, bootstrap into a cluster, etc. To invoke a local process, see the local-exec provisioner instead. The remote-exec provisioner requires a connection and supports both ssh and winrm.
+
+```t
+resource "aws_instance" "web" {
+  # ...
+
+  # Establishes connection to be used by all
+  # generic remote provisioners (i.e. file/remote-exec)
+  connection {
+    type     = "ssh"
+    user     = "root"
+    password = var.root_password
+    host     = self.public_ip
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "puppet apply",
+      "consul join ${aws_instance.web.private_ip}",
+    ]
+  }
+}
+
+```
+### File Provisioners
+[File Provisoners](https://developer.hashicorp.com/terraform/language/resources/provisioners/file)
+The file provisioner copies files or directories from the machine running Terraform to the newly created resource. The file provisioner supports both ssh and winrm type connections.
+
+```t
+resource "aws_instance" "web" {
+  # ...
+
+  # Copies the myapp.conf file to /etc/myapp.conf
+  provisioner "file" {
+    source      = "conf/myapp.conf"
+    destination = "/etc/myapp.conf"
+  }
+
+  # Copies the string in content into /tmp/file.log
+  provisioner "file" {
+    content     = "ami used: ${self.ami}"
+    destination = "/tmp/file.log"
+  }
+
+  # Copies the configs.d folder to /etc/configs.d
+  provisioner "file" {
+    source      = "conf/configs.d"
+    destination = "/etc"
+  }
+
+  # Copies all files and folders in apps/app1 to D:/IIS/webapp1
+  provisioner "file" {
+    source      = "apps/app1/"
+    destination = "D:/IIS/webapp1"
+  }
+}
+
+```
+
+### Implementing a Heredoc
+[Heredoc Concept](https://www.google.com/search?q=heredoc&rlz=1C1CHBD_enGH1067GH1067&oq=heredoc&gs_lcrp=EgZjaHJvbWUyCQgAEEUYORiABDIHCAEQABiABDIHCAIQABiABDIHCAMQABiABDIHCAQQABiABDIHCAUQABiABDIHCAYQABiABDIHCAcQABiABDIHCAgQABiABDIHCAkQABiABNIBCDE5NDlqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8)
+In computing, a here document is a file literal or input stream literal: it is a section of a source code file that is treated as if it were a separate file;
+
+```sh
+<<EOT
+%{ for ip in aws_instance.example[*].private_ip ~}
+server ${ip}
+%{ endfor ~}
+EOT
+
+```
+The concept behind heredoc is that instead of the entire code been on a single line, we break it down to several lines to get the beneath output, giving you a clean comparted output  NB: Remember to start with EOT and end with it.
+
+```sh
+server 10.1.16.154
+server 10.1.16.1
+server 10.1.16.34
+
+```
+
+### Preview your website locally
+Install webserver ie; http server  
+[Http-Server](https://www.npmjs.com/package/http-server)
+
+Install command:```npm install --global http-server```
+
+Now serve it up with ``` http-server```
+
+### Working with Terraform Console
+Enter into terraform console ```terraform console```
+
+[Fileset Function](https://developer.hashicorp.com/terraform/language/functions/fileset)
+File reads the contents of a file at the given path and returns them as a string.
+fileset enumerates a set of regular file names given a path and pattern. The path is automatically removed from the resulting set of file names and any result still containing path separators always returns forward slash (/) as the path separator for cross-system compatibility. eg; `fileset(path, pattern)`
+
+Fileset function to set a path ```fileset("${path.root}/public/assets", "*.{jpg,png,gif}") ```
+
+### For_each Expressions
+[For_each Expressions](https://developer.hashicorp.com/terraform/language/meta-arguments/for_each)
+It allows us to enumerate over complex data types
+This is useful when creating multiple cloud resources and you want to reduce the amount of repetitive terraform code 
+By default, a resource block configures one real infrastructure object (and similarly, a module block includes a child module's contents into the configuration one time). However, sometimes you want to manage several similar objects (like a fixed pool of compute instances) without writing a separate block for each one. Terraform has two ways to do this: count and for_each.
+
+## Switching Git tags
+Just like braching, you can also branch a tag ```git checkout 1.5.0```
+After this, instead of main branch, you will see `(1.5.0)`
+You can create another branch with ```git checkout -b terraform-cloud``
+
+## Storing State in Terraform Cloud (A basic intro to GitOps)
+Make sure you have a terraform provider block for your terraform
+
+```t
+terraform {
+  
+  cloud {
+    organization = "phosters"
+
+    workspaces {
+      name = "terraform-cloud"
+    }
+  }
+
+
+}
+```
+Then connect terraform cloud to your vcs ie; Github, Bitbucket and Gitlab
+`Workspace settings > Version Control > Github ` 
+At times this will not work as plan when using Github, so you will need to go to github to check its permissions
+
+`Github > Settings > Integrations > Applications >Choose your branch name > select the right repository if not selected `
+
+
+Locating ecution mode; `Workspace settings > General > Execution Mode > Local/Remote`
+Then make it pick its variables from local by changing it from remote to local
+
+If you want to do a remote execute, then add the various **terraform var** and **env vars** to the remote terraform cloud
+NB: If you are in local as execution, vars will not be visible unless remote
+
+In our case we will work with remote and the **env var** for accessing aws will be:
+
+```t
+AWS_ACCESS_KEY_ID='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+AWS_SECRET_ACCESS_KEY='xxxxxxxxxxxxxxxxxxxxxxxxxxx/xxx'
+AWS_DEFAULT_REGION='us-east-2'
+
+```
+And then add the **terraform variables** in our .tfvars
+
+```t
+user_uuid = "25262-jhbnk-4bjknb1-bfnj8c-29bjjn"
+bucket_name = "terraform_bootcamp_bucket_2023"
+index_html_filepath = "/workspace/terraform-beginner-bootcamp-2023/public/index.html"
+error_html_filepath = "/workspace/terraform-beginner-bootcamp-2023/public/error.html"
+assets_path = "/workspace/terraform-beginner-bootcamp-2023/public/assets"
+content_version = 1
+```

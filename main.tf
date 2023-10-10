@@ -1,5 +1,4 @@
 #https://registry.terraform.io/providers/hashicorp/aws/latest
-/*
 
 terraform {
   
@@ -7,14 +6,14 @@ terraform {
     organization = "phosters"
 
     workspaces {
-      name = "terra-house-1"
+      name = "terraform-cloud"
     }
   }
 
 
 }
 
-*/
+
 
 module "terrahouse_aws" {
     source = "./modules/terrahouse_aws"
