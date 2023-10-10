@@ -34,4 +34,18 @@ variable "error_html_filepath" {
   }
 }
 
+variable "content_version" {
+  description = "Content version number"
+  type        = number
+  default     = 1
+  validation {
+    condition     = var.content_version >= 1
+    error_message = "Content version must be a positive integer starting at 1."
+  }
+}
 
+variable "assets_path"{
+  description = "Path to assets folder"
+  type = string
+
+}

@@ -580,3 +580,4 @@ error_html_filepath = "/workspace/terraform-beginner-bootcamp-2023/public/error.
 assets_path = "/workspace/terraform-beginner-bootcamp-2023/public/assets"
 content_version = 1
 ```
+
