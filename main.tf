@@ -6,7 +6,7 @@ terraform {
     organization = "phosters"
 
     workspaces {
-      name = "terraform-cloud"
+      name = "terra-house-1"
     }
   }
 
