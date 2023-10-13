@@ -1,16 +1,16 @@
 #https://registry.terraform.io/providers/hashicorp/aws/latest
 
-terraform {
+# terraform {
   
-  cloud {
-    organization = "phosters"
+#   cloud {
+#     organization = "phosters"
 
-    workspaces {
-      name = "terra-house-1"
-    }
-  }
+#     workspaces {
+#       name = "terra-house-1"
+#     }
+#   }
 
-}
+# }
 
 
 
