@@ -1,10 +1,12 @@
 #https://registry.terraform.io/providers/hashicorp/aws/latest
 
- terraform {
+terraform {
   required_providers {
     source = "local.providers/local/terratowns"
     version = "1.0.0"
   }
+
+}
    
 #   cloud {
 #     organization = "phosters"
@@ -14,7 +16,7 @@
 #     }
 #   }
 
-}
+# }
 
 provider "terratowns" {
   endpoint = "http://localhost:4567"
