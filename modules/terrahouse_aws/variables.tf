@@ -8,44 +8,17 @@ variable "user_uuid" {
   }
 }
 
-variable "bucket_name" {
-  description = "Bucket for s3 terraform_bootcamp_bucket_2023"
+variable "public_path" {
+  description = "The file path for the public directory"
   type        = string
-
-}
-
-variable "index_html_filepath" {
-  type        = string
-  description = "Path to the index.html file"
-
-  validation {
-    condition = fileexists(var.index_html_filepath)
-    error_message = "The specified index_html_filepath is not a valid file path."
-  }
-}
-
-variable "error_html_filepath" {
-  type        = string
-  description = "Path to the error.html file"
-  
-  validation {
-    condition = fileexists(var.error_html_filepath)
-    error_message = "The specified error_html_filepath is not a valid file path."
-  }
 }
 
 variable "content_version" {
-  description = "Content version number"
+  description = "The content version. Should be a positive integer starting at 1."
   type        = number
-  default     = 1
+
   validation {
-    condition     = var.content_version >= 1
-    error_message = "Content version must be a positive integer starting at 1."
+    condition     = var.content_version > 0 && floor(var.content_version) == var.content_version
+    error_message = "The content_version must be a positive integer starting at 1."
   }
-}
-
-variable "assets_path"{
-  description = "Path to assets folder"
-  type = string
-
 }
